@@ -6,10 +6,24 @@ import matplotlib.pyplot as plt
 
 def main():
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description='Plot infection distribution for a specific age group')
-    parser.add_argument('file_name', type=str, help='Path to the CSV file containing simulation results')
-    parser.add_argument('age_group', type=str, help='Specify the age group (kids, adults, or grandparents)')
-    parser.add_argument('output_file', type=str, help='Output file name')
+    parser = argparse.ArgumentParser(description=
+                                     'Plot infection distribution for a specific age group')
+    
+    parser.add_argument('file_name', 
+                        type=str, 
+                        help='Path to the CSV file containing simulation results',
+                        required=True)
+    
+    parser.add_argument('age_group', 
+                        type=str, 
+                        help='Specify the age group (kids, adults, or grandparents)',
+                        required=True)
+    
+    parser.add_argument('output_file', 
+                        type=str, 
+                        help='Output file name',
+                        required=True)
+    
     args = parser.parse_args()
     
     # Read the CSV file
