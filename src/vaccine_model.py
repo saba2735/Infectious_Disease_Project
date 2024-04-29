@@ -1,5 +1,8 @@
+import csv
 import numpy as np
 from tabulate import tabulate
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 # Function to simulate the leaky model
 def leaky_model(R0, N, VE):
@@ -126,6 +129,19 @@ def All_or_Nothing_model(R_0, N, VE):
     
     return total_infections
 
+def plot_histogram(data, age_group, file):
+    # Filter data for the specified age group
+    filtered_data = data[data['Age_Group'] == age_group]
+    
+    # Plot histogram
+    sns.histplot(filtered_data, x='Total_Infections', hue='VE', bins=15, alpha=0.7)
+    plt.title(f'Infection Distribution for {age_group}')
+    plt.xlabel('Total Infections')
+    plt.ylabel('Frequency')
+    plt.legend(title='VE')
+    plt.savefig(file)
+
+
 def main():
     # Parameters
     R0_kids_range = np.linspace(1.7, 2, num=5)
@@ -136,34 +152,32 @@ def main():
     N_adults = 55
     N_grandparents = 60
     
-    # Initialize the table data
-    table_data = []
-    
-    # Loop through the R0 values for kids
-    for R0_kids in R0_kids_range:
-        # Loop through the R0 values for adults
-        for R0_adults in R0_adults_range:
-            # Create a row for each combination of R0 values
-            row = [R0_kids, R0_adults, R0_grandparents]
-            # Calculate total infections for each VE value
-            for VE in VE_vals:
-                # Calculate total infections using the leaky model for kids
-                lm_total_infections_kids = leaky_model(R0_kids, N_kids, VE)
-                # Calculate total infections using the leaky model for adults
-                lm_total_infections_adults = leaky_model(R0_adults, N_adults, VE)
-                # Calculate total infections using the all-or-nothing model for grandparents
-                lm_total_infections_grandparents = All_or_Nothing_model(R0_grandparents, N_grandparents, VE)
-                # Append the results to the row
-                row.extend([lm_total_infections_kids, lm_total_infections_adults, lm_total_infections_grandparents])
-            # Append the row to the table data
-            table_data.append(row)
-    
-    # Define the headers for the table
-    headers = ['R0_kids', 'R0_adults', 'R0_grandparents'] + [f'TI_kids_VE_{VE}' for VE in VE_vals] + [f'TI_adults_VE_{VE}' for VE in VE_vals] + [f'TI_grandparents_VE_{VE}' for VE in VE_vals]
-    
-    # Save the table to a text file
-    with open('simulation_results.txt', 'w') as f:
-        f.write(tabulate(table_data, headers=headers, tablefmt='grid'))
+    # Initialize the CSV file
+    with open('simulation_results.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        
+        # Write the header row
+        headers = ['R0_kids', 'R0_adults', 'R0_grandparents'] + [f'TI_kids_VE_{VE}' for VE in VE_vals] + [f'TI_adults_VE_{VE}' for VE in VE_vals] + [f'TI_grandparents_VE_{VE}' for VE in VE_vals]
+        writer.writerow(headers)
+        
+        # Loop through the R0 values for kids
+        for R0_kids in R0_kids_range:
+            # Loop through the R0 values for adults
+            for R0_adults in R0_adults_range:
+                # Create a row for each combination of R0 values
+                row = [R0_kids, R0_adults, R0_grandparents]
+                # Calculate total infections for each VE value
+                for VE in VE_vals:
+                    # Calculate total infections using the leaky model for kids
+                    lm_total_infections_kids = leaky_model(R0_kids, N_kids, VE)
+                    # Calculate total infections using the leaky model for adults
+                    lm_total_infections_adults = leaky_model(R0_adults, N_adults, VE)
+                    # Calculate total infections using the all-or-nothing model for grandparents
+                    lm_total_infections_grandparents = All_or_Nothing_model(R0_grandparents, N_grandparents, VE)
+                    # Append the results to the row
+                    row.extend([lm_total_infections_kids, lm_total_infections_adults, lm_total_infections_grandparents])
+                # Write the row to the CSV file
+                writer.writerow(row)
 
 if __name__ == '__main__':
     main()
