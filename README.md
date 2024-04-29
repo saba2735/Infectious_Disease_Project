@@ -10,8 +10,10 @@
 91437A_1_201_a](https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/8e0b6573-917c-40ba-a5ed-068afa707663)
 
 # Equations:
-SEIRS: 
+## SEIRS: 
+
 <img width="235" alt="Screenshot 2024-04-29 at 10 58 44 AM" src="https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/5fbcc0a4-01dc-4f8c-9460-df74c2b6e124">
 
-Modified SEIRS:
+## Modified SEIRS:
+
 <img width="246" alt="Screenshot 2024-04-29 at 10 58 56 AM" src="https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/414669c8-31e7-4f87-910e-e1a3d5b3dbde">
