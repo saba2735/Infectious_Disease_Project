@@ -1,6 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
+from tabulate import tabulate
 
+# Function to simulate the leaky model
 def leaky_model(R0, N, VE):
     period_of_infection = 14
     gamma = 1 / period_of_infection
@@ -27,18 +28,18 @@ def leaky_model(R0, N, VE):
         
         if VE == 0:
             # For VE = 0, LM behaves like regular SIR
-            dI_dt = (beta * S * I / N)+(beta*V*I*(1-VE))/N -(gamma*I)/N
+            dI_dt = (beta * S * I / N) + (beta * V * I * (1 - VE)) / N - (gamma * I) / N
             dV_dt = 0  # No change in vaccinated individuals
         elif VE == 0.8: 
-            dI_dt = (beta * S * I/ N) +(beta*V*I*(1-VE))/N-(gamma*I)/N
-            dV_dt = (-beta*I*(1-VE))*0.8
+            dI_dt = (beta * S * I / N) + (beta * V * I * (1 - VE)) / N - (gamma * I) / N
+            dV_dt = (-beta * I * (1 - VE)) * 0.8
         elif VE == 1:
             # When VE is 1, no new infections and everyone is vaccinated
             dI_dt = 0  # No change in infected individuals
             dV_dt = 0  # No change in vaccinated individuals
         else: 
-            dI_dt = (beta * S * I / N) +(beta*V*I*(1-VE))/N-(gamma*I)/N
-            dV_dt = -beta*V*I*(1-VE)
+            dI_dt = (beta * S * I / N) + (beta * V * I * (1 - VE)) / N - (gamma * I) / N
+            dV_dt = -beta * V * I * (1 - VE)
         
         # Update values using Euler method
         S += dt * dS_dt
@@ -54,8 +55,9 @@ def leaky_model(R0, N, VE):
     
     total_infections = max(Inf)
     
-    return time, Sus, Inf, Rec, Vax, total_infections
+    return total_infections
 
+# Function to simulate the all-or-nothing model
 def All_or_Nothing_model(R_0, N, VE):
     infectious_period = 14
     beta = R_0 / infectious_period
@@ -77,6 +79,7 @@ def All_or_Nothing_model(R_0, N, VE):
     Vax_null = [V_null]
     Vax_all = [V_all]
     time = [init_t]
+    
     # Forward Euler method
     for t in np.arange(init_t, final_t, dt):
         # Update equations for S, I, R, V_null, and V_all
@@ -84,13 +87,13 @@ def All_or_Nothing_model(R_0, N, VE):
         
         if VE == 0:
             # When VE is 0, ANM behaves like regular SIR
-            dI_dt = (beta * S * I / N)+(beta*V*I*(1-VE))/N -(gamma*I)/N
+            dI_dt = (beta * S * I / N) + (beta * V * I * (1 - VE)) / N - (gamma * I) / N
             dV_null_dt = 0 # No change in vaccinated individuals
             dR_dt = gamma * I
             dV_all_dt = 0  # No change in vaccinated individuals
         elif VE == 0.8: 
-            dI_dt = (beta * S * I)/ N + (beta*V*I*(1-VE))/N-(gamma*I)/N
-            dV_null_dt =0.8 
+            dI_dt = (beta * S * I) / N + (beta * V * I * (1 - VE)) / N - (gamma * I) / N
+            dV_null_dt = 0.8 
             dR_dt = gamma * I
             dV_all_dt = 0.8
         elif VE == 1:
@@ -105,7 +108,7 @@ def All_or_Nothing_model(R_0, N, VE):
             dR_dt = gamma * I
             dV_all_dt = N * VE * (-beta * S * I / N) # Corrected vaccination rate for VE != 0
         
-
+        # Update values using Euler method
         S += dt * dS_dt
         I += dt * dI_dt
         R += dt * dR_dt
@@ -121,49 +124,46 @@ def All_or_Nothing_model(R_0, N, VE):
     
     total_infections = max(Inf)
     
-    return time, Sus, Inf, Rec, Vax_null, Vax_all, total_infections
+    return total_infections
 
 def main():
     # Parameters
-    R0_kids = 2
-    R0_adults = 2
+    R0_kids_range = np.linspace(1.7, 2, num=5)
+    R0_adults_range = np.linspace(1, 2, num=5)
     R0_grandparents = 2
     VE_vals = [0, 0.8, 1]
     N_kids = 30
     N_adults = 55
     N_grandparents = 60
-    total_population = N_kids + N_adults + N_grandparents
     
-    contact_matrix = np.array([[20, 2, 2],
-                               [2, 1, 2],
-                               [2, 2, 1]])
+    # Initialize the table data
+    table_data = []
     
-    for VE in VE_vals:
-        # Run LM and ANM simulations for kids
-        lm_data_kids = leaky_model(R0_kids, N_kids, VE)
-        anm_data_kids = All_or_Nothing_model(R0_kids, N_kids, VE)
-        # Extract cumulative infectious populations
-        lm_total_infections_kids = round(lm_data_kids[5], 0)  # Last value of infected from LM data
-        anm_total_infections_kids = round(anm_data_kids[6], 0)  # Last value of infected from ANM data
-        
-        # Run LM and ANM simulations for adults
-        lm_data_adults = leaky_model(R0_adults, N_adults, VE)
-        anm_data_adults = All_or_Nothing_model(R0_adults, N_adults, VE)
-        # Extract cumulative infectious populations
-        lm_total_infections_adults = round(lm_data_adults[5], 0)  # Last value of infected from LM data
-        anm_total_infections_adults = round(anm_data_adults[6], 0)  # Last value of infected from ANM data
-        
-        # Run LM and ANM simulations for grandparents
-        lm_data_grandparents = leaky_model(R0_grandparents, N_grandparents, VE)
-        anm_data_grandparents = All_or_Nothing_model(R0_grandparents, N_grandparents, VE)
-        # Extract cumulative infectious populations
-        lm_total_infections_grandparents = round(lm_data_grandparents[5], 0)  # Last value of infected from LM data
-        anm_total_infections_grandparents = round(anm_data_grandparents[6], 0)  # Last value of infected from ANM data
-        
-        print(f'VE={VE}')
-        print(f'Total infections for kids: {lm_total_infections_kids}, {anm_total_infections_kids}')
-        print(f'Total infections for adults: {lm_total_infections_adults}, {anm_total_infections_adults}')
-        print(f'Total infections for grandparents: {lm_total_infections_grandparents}, {anm_total_infections_grandparents}\n')
-            
+    # Loop through the R0 values for kids
+    for R0_kids in R0_kids_range:
+        # Loop through the R0 values for adults
+        for R0_adults in R0_adults_range:
+            # Create a row for each combination of R0 values
+            row = [R0_kids, R0_adults, R0_grandparents]
+            # Calculate total infections for each VE value
+            for VE in VE_vals:
+                # Calculate total infections using the leaky model for kids
+                lm_total_infections_kids = leaky_model(R0_kids, N_kids, VE)
+                # Calculate total infections using the leaky model for adults
+                lm_total_infections_adults = leaky_model(R0_adults, N_adults, VE)
+                # Calculate total infections using the all-or-nothing model for grandparents
+                lm_total_infections_grandparents = All_or_Nothing_model(R0_grandparents, N_grandparents, VE)
+                # Append the results to the row
+                row.extend([lm_total_infections_kids, lm_total_infections_adults, lm_total_infections_grandparents])
+            # Append the row to the table data
+            table_data.append(row)
+    
+    # Define the headers for the table
+    headers = ['R0_kids', 'R0_adults', 'R0_grandparents'] + [f'TI_kids_VE_{VE}' for VE in VE_vals] + [f'TI_adults_VE_{VE}' for VE in VE_vals] + [f'TI_grandparents_VE_{VE}' for VE in VE_vals]
+    
+    # Save the table to a text file
+    with open('simulation_results.txt', 'w') as f:
+        f.write(tabulate(table_data, headers=headers, tablefmt='grid'))
+
 if __name__ == '__main__':
     main()
