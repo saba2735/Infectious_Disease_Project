@@ -89,7 +89,7 @@ def All_or_Nothing_model(R_0, N, VE):
             dR_dt = gamma * I
             dV_all_dt = 0  # No change in vaccinated individuals
         elif VE == 0.8: 
-            dI_dt = (beta * S * I)/ N + (beta*V_null*I)/N-(gamma*I)/N
+            dI_dt = (beta * S * I)/ N + (beta*V*I*(1-VE))/N-(gamma*I)/N
             dV_null_dt =0.8 
             dR_dt = gamma * I
             dV_all_dt = 0.8
@@ -125,54 +125,45 @@ def All_or_Nothing_model(R_0, N, VE):
 
 def main():
     # Parameters
-    R0_vals = [3, 4, 5]
+    R0_kids = 2
+    R0_adults = 2
+    R0_grandparents = 2
     VE_vals = [0, 0.8, 1]
-    N = 300000
+    N_kids = 30
+    N_adults = 55
+    N_grandparents = 60
+    total_population = N_kids + N_adults + N_grandparents
     
-    for R0 in R0_vals:
-        for VE in VE_vals:
-            # Run LM and ANM simulations
-            lm_data = leaky_model(R0, N, VE)
-            anm_data = All_or_Nothing_model(R0, N, VE)
+    contact_matrix = np.array([[20, 2, 2],
+                               [2, 1, 2],
+                               [2, 2, 1]])
+    
+    for VE in VE_vals:
+        # Run LM and ANM simulations for kids
+        lm_data_kids = leaky_model(R0_kids, N_kids, VE)
+        anm_data_kids = All_or_Nothing_model(R0_kids, N_kids, VE)
+        # Extract cumulative infectious populations
+        lm_total_infections_kids = round(lm_data_kids[5], 0)  # Last value of infected from LM data
+        anm_total_infections_kids = round(anm_data_kids[6], 0)  # Last value of infected from ANM data
+        
+        # Run LM and ANM simulations for adults
+        lm_data_adults = leaky_model(R0_adults, N_adults, VE)
+        anm_data_adults = All_or_Nothing_model(R0_adults, N_adults, VE)
+        # Extract cumulative infectious populations
+        lm_total_infections_adults = round(lm_data_adults[5], 0)  # Last value of infected from LM data
+        anm_total_infections_adults = round(anm_data_adults[6], 0)  # Last value of infected from ANM data
+        
+        # Run LM and ANM simulations for grandparents
+        lm_data_grandparents = leaky_model(R0_grandparents, N_grandparents, VE)
+        anm_data_grandparents = All_or_Nothing_model(R0_grandparents, N_grandparents, VE)
+        # Extract cumulative infectious populations
+        lm_total_infections_grandparents = round(lm_data_grandparents[5], 0)  # Last value of infected from LM data
+        anm_total_infections_grandparents = round(anm_data_grandparents[6], 0)  # Last value of infected from ANM data
+        
+        print(f'VE={VE}')
+        print(f'Total infections for kids: {lm_total_infections_kids}, {anm_total_infections_kids}')
+        print(f'Total infections for adults: {lm_total_infections_adults}, {anm_total_infections_adults}')
+        print(f'Total infections for grandparents: {lm_total_infections_grandparents}, {anm_total_infections_grandparents}\n')
             
-            # Extract cumulative infectious populations
-            lm_total_infections = round(lm_data[5], 0)  # Last value of infected from LM data
-            anm_total_infections = round(anm_data[6], 0)  # Last value of infected from ANM data
-            
-            print(f'R_0={R0}, VE={VE}')
-            print(f'Total infections for LM: {lm_total_infections}')
-            
-            if VE == 0:
-                print(f'Total Infections for ANM: {anm_total_infections}')  # Print ANM value only when VE = 0
-            elif VE == 1:
-                print(f'Total Infections for ANM: {anm_total_infections}')  # Print ANM value only when VE = 1
-            elif VE == 0.8:
-                print(f'Total Infections for ANM: {anm_total_infections}')  # Print ANM value only when VE = 0.8
-            
-            # Plotting (unchanged)
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
-    
-            # SIR dynamic curves (unchanged)
-            ax1.plot(lm_data[0], lm_data[2], color='red', label='Infected-LM')
-            ax1.plot(anm_data[0], anm_data[2], color='blue', label='Infected-ANM')
-            ax1.set_xlabel('Time (days)')
-            ax1.set_ylabel('Infected Population (people)')
-            ax1.set_title(f'Infected Population of a vaccine model using SIR of R0={R0}, VE={VE}')
-            ax1.legend()
-    
-            # Bar Plots (unchanged)
-            ax2.plot(['LM', 'ANM'], [lm_total_infections, anm_total_infections])
-            ax2.set_xlabel('Time (days)')
-            ax2.set_ylabel('Total infected population (People)')
-            ax2.set_title(f'Total infectious population of R0={R0}, VE = {VE}')
-    
-            plt.tight_layout()
-    
-            # Save plot to file (unchanged)
-            filename = f'Leaky Model vs. All or Nothing model for VE_{VE}_R0_{R0}.png'
-            fig.savefig(filename)
-            print(f'Graph saved as {filename}\n')
-
 if __name__ == '__main__':
     main()
-
