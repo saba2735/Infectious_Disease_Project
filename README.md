@@ -8,3 +8,10 @@
 # Modified SEIRS Model to Include T Based on Age Group:
   ![7A252579-3948-4CFB-B9EA-09B956![D1A78702-E204-4E51-94CB-1595EF1F787F_1_201_a](https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/4be54916-18b5-40c6-865e-ac25cf56fb13)
 91437A_1_201_a](https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/8e0b6573-917c-40ba-a5ed-068afa707663)
+
+# Equations:
+SEIRS: 
+<img width="235" alt="Screenshot 2024-04-29 at 10 58 44 AM" src="https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/5fbcc0a4-01dc-4f8c-9460-df74c2b6e124">
+
+Modified SEIRS:
+<img width="246" alt="Screenshot 2024-04-29 at 10 58 56 AM" src="https://github.com/saba2735/Infectious_Disease_Project/assets/123501165/414669c8-31e7-4f87-910e-e1a3d5b3dbde">
