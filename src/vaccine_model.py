@@ -142,7 +142,7 @@ def main():
     # Initialize the CSV file
     with open('simulation_results.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-    
+        
         # Loop through the R0 values for kids
         for R0_kids in R0_kids_range:
             # Loop through the R0 values for adults
