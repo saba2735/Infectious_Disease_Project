@@ -142,11 +142,7 @@ def main():
     # Initialize the CSV file
     with open('simulation_results.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        
-        # Write the header row
-        headers = ['R0_kids', 'R0_adults', 'R0_grandparents'] + [f'TI_kids_VE_{VE}' for VE in VE_vals] + [f'TI_adults_VE_{VE}' for VE in VE_vals] + [f'TI_grandparents_VE_{VE}' for VE in VE_vals]
-        writer.writerow(headers)
-        
+    
         # Loop through the R0 values for kids
         for R0_kids in R0_kids_range:
             # Loop through the R0 values for adults
