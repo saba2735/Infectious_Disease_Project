@@ -1,8 +1,9 @@
-import argparse
 import sys
-import pandas as pd
+import argparse
 import seaborn as sns
+import pandas as pd
 import matplotlib.pyplot as plt
+from vaccine_model import read_csv
 
 def main():
     # Parse command-line arguments
@@ -26,15 +27,50 @@ def main():
     # Read the CSV file
     data = pd.read_csv(args.file_name)
     if args.age_group == 'kids':
-        # Plot histogram for the specified age group
-        sns.scatterplot(x=data['R0_kids'], y=data[['TI_kids_VE_0', 'TI_kids_VE_0.8', 'TI_kids_VE_1']], bins=15, alpha=0.7)
+        # Combine data for different VE values into a single DataFrame
+        ve_data = pd.DataFrame({
+            'R0_kids': data['R0_kids'].tolist() * 3,
+            'Total_Infections': data['TI_kids_VE_0'].tolist() + data['TI_kids_VE_0.8'].tolist() + data['TI_kids_VE_1'].tolist(),
+            'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
+        })
+        # Plot side-by-side bar plot for the specified age group
+        sns.barplot(x='R0_kids', y='Total_Infections', hue='VE', data=ve_data)
         plt.title(f'Infection Distribution for {args.age_group}')
-        plt.xlabel('Total Infections')
-        plt.ylabel('Frequency')
-        #plt.legend(title='VE') Need to have this show for the different R0 values I think
+        plt.xlabel('R0')
+        plt.ylabel('Total Infections')
+        plt.legend(title='Vaccine Efficacy (VE)')
         plt.savefig(args.output_file)
-    else:
-        print('no plots here ...')
+        
+    if args.age_group == 'adults':
+            # Combine data for different VE values into a single DataFrame
+        ve_data = pd.DataFrame({
+            'R0_adults': data['R0_adults'].tolist() * 3,
+            'Total_Infections': data['TI_adults_VE_0'].tolist() + data['TI_adults_VE_0.8'].tolist() + data['TI_adults_VE_1'].tolist(),
+            'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
+        })
+        # Plot side-by-side bar plot for the specified age group
+        sns.barplot(x='R0_adults', y='Total_Infections', hue='VE', data=ve_data)
+        plt.title(f'Infection Distribution for {args.age_group}')
+        plt.xlabel('R0')
+        plt.ylabel('Total Infections')
+        plt.legend(title='Vaccine Efficacy (VE)')
+        plt.savefig(args.output_file)
+    
+    if args.age_group == 'grandparents':
+                    # Combine data for different VE values into a single DataFrame
+        ve_data = pd.DataFrame({
+            'R0_grandparents': data['R0_grandparents'].tolist() * 3,
+            'Total_Infections': data['TI_grandparents_VE_0'].tolist() + data['TI_grandparents_VE_0.8'].tolist() + data['TI_grandparents_VE_1'].tolist(),
+            'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
+        })
+        # Plot side-by-side bar plot for the specified age group
+        sns.barplot(x='R0_grandparents', y='Total_Infections', hue='VE', data=ve_data)
+        plt.title(f'Infection Distribution for {args.age_group}')
+        plt.xlabel('R0')
+        plt.ylabel('Total Infections')
+        plt.legend(title='Vaccine Efficacy (VE)')
+        plt.savefig(args.output_file)
+        
     print(f"Plot saved as '{args.output_file}'")
 
 if __name__ == '__main__':

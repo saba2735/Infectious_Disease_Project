@@ -1,6 +1,15 @@
 import csv
 import numpy as np
 
+
+def read_csv(file_name):
+    data = []
+    with open(file_name, 'r') as file:
+        csv_reader = csv.DictReader(file)
+        for row in csv_reader:
+            data.append(row)
+    return data
+
 # Function to simulate the leaky model
 def leaky_model(R0, N, VE):
     period_of_infection = 14
