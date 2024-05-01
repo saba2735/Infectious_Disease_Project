@@ -10,7 +10,8 @@ def read_csv(file_name):
     return data
 
 def calculate_re(R0, N, VE):
-    return R0 * N*(1 - VE)
+    susceptible_after_vaccination = max(N-N*VE,0)
+    return R0 * (susceptible_after_vaccination/N) 
 
 def main():
     # Parameters
@@ -21,7 +22,6 @@ def main():
     N_kids = 30 
     N_adults = 55 
     N_grandparents = 60
-
     # Initialize the CSV file and write headers
     with open('re_calculation_results.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
@@ -35,16 +35,22 @@ def main():
             for R0_adults in R0_adults_range:
                 # Loop through the R0 values for grandparents
                 for R0_grandparents in R0_grandparents_range:
-                    # Loop through the VE values
+                    # Loop through the VE values for kids
                     for VE_kids in VE_vals:
+                        # Loop through the VE values for adults
                         for VE_adults in VE_vals:
+                            # Loop through the VE values for grandparents
                             for VE_grandparents in VE_vals:
+                                # Calculate Re values for each age group with corresponding VE values
                                 Re_kids = calculate_re(R0_kids, N_kids, VE_kids)
                                 Re_adults = calculate_re(R0_adults, N_adults, VE_adults)
                                 Re_grandparents = calculate_re(R0_grandparents, N_grandparents, VE_grandparents)
+                                
+                                # Write the results to the CSV file
                                 row = [R0_kids, R0_adults, R0_grandparents, VE_kids, VE_adults, VE_grandparents,
                                        Re_kids, Re_adults, Re_grandparents]
                                 writer.writerow(row)
+
 
 if __name__ == '__main__':
     main()
