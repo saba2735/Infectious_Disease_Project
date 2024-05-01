@@ -1,7 +1,6 @@
 import csv
 import numpy as np
 
-
 def read_csv(file_name):
     data = []
     with open(file_name, 'r') as file:
