@@ -23,14 +23,14 @@ def main():
                         help='Output file name')
     
     args = parser.parse_args()
-    
+
+
     # Read the CSV file
     data = pd.read_csv(args.file_name)
     if args.age_group == 'kids':
-        # Combine data for different VE values into a single DataFrame
         ve_data = pd.DataFrame({
             'R0_kids': data['R0_kids'].tolist() * 3,
-            'Total_Infections': data['TI_kids_VE_0'].tolist() + data['TI_kids_VE_0.8'].tolist() + data['TI_kids_VE_1'].tolist(),
+            'Total_Infections': data['VE_0_kids'].tolist() + data['VE_0.8_kids'].tolist() + data['VE_1_kids'].tolist(),
             'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
         })
         # Plot side-by-side bar plot for the specified age group
@@ -45,7 +45,7 @@ def main():
             # Combine data for different VE values into a single DataFrame
         ve_data = pd.DataFrame({
             'R0_adults': data['R0_adults'].tolist() * 3,
-            'Total_Infections': data['TI_adults_VE_0'].tolist() + data['TI_adults_VE_0.8'].tolist() + data['TI_adults_VE_1'].tolist(),
+            'Total_Infections': data['VE_0_adults'].tolist() + data['VE_0.8_adults'].tolist() + data['VE_1_adults'].tolist(),
             'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
         })
         # Plot side-by-side bar plot for the specified age group
@@ -57,10 +57,9 @@ def main():
         plt.savefig(args.output_file)
     
     if args.age_group == 'grandparents':
-                    # Combine data for different VE values into a single DataFrame
         ve_data = pd.DataFrame({
             'R0_grandparents': data['R0_grandparents'].tolist() * 3,
-            'Total_Infections': data['TI_grandparents_VE_0'].tolist() + data['TI_grandparents_VE_0.8'].tolist() + data['TI_grandparents_VE_1'].tolist(),
+            'Total_Infections': data['VE_0_grandparents'].tolist() + data['VE_0.8_grandparents'].tolist() + data['VE_1_grandparents'].tolist(),
             'VE': ['VE 0'] * len(data) + ['VE 0.8'] * len(data) + ['VE 1'] * len(data)
         })
         # Plot side-by-side bar plot for the specified age group

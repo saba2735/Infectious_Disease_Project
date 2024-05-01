@@ -21,7 +21,6 @@ def leaky_model(R0, N, VE):
     final_t = 300
     init_t = 0
     dt = 0.01
-    
     # Lists to store results
     Sus = [S]
     Rec = [R]
@@ -40,14 +39,14 @@ def leaky_model(R0, N, VE):
             dV_dt = 0  # No change in vaccinated individuals
         elif VE == 0.8: 
             dI_dt = (beta * S * I / N)+(beta*V*I*(1-VE))/N -(gamma*I)/N
-            dV_dt = (-beta*I*(1-VE))*0.8
+            dV_dt = (-beta*I*(1-VE))*N
         elif VE == 1:
             # When VE is 1, no new infections and everyone is vaccinated
             dI_dt = 0  # No change in infected individuals
             dV_dt = 0  # No change in vaccinated individuals
         else:
             dI_dt = (beta * S * I / N)+(beta*V*I*(1-VE))/N -(gamma*I)/N
-            dV_dt = -beta * V * I * (1 - VE)
+            dV_dt = -beta * V * I * (1 - VE)*N
     
         # Update values using Euler method
         I += dt * dI_dt
